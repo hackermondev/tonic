@@ -79,13 +79,19 @@ impl<T> Streaming<T> {
     }
 
     /// Create empty response. For creating responses that have no content (headers + trailers only)
-    pub fn new_empty<B, D>(decoder: D, body: B) -> Self
+    pub(crate) fn new_empty<B, D>(decoder: D, body: B, max_message_size: Option<usize>) -> Self
     where
         B: HttpBody + Send + 'static,
         B::Error: Into<crate::BoxError>,
         D: Decoder<Item = T, Error = Status> + Send + 'static,
     {
-        Self::new(decoder, body, Direction::EmptyResponse, None, None)
+        Self::new(
+            decoder,
+            body,
+            Direction::EmptyResponse,
+            None,
+            max_message_size,
+        )
     }
 
     /// Create a new streaming request in the grpc response format for decoding a request [Body]
